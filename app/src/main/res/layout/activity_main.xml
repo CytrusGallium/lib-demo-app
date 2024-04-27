@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -10,17 +11,21 @@
         android:id="@+id/image_loader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/image_loader"/>
+        android:text="@string/image_loader"
+        android:visibility="gone"
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/code_scanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/code_scanner"/>
+        android:text="@string/code_scanner" />
 
     <Button
         android:id="@+id/circular_progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/circular_progress_bar"/>
+        android:text="@string/circular_progress_bar"
+        android:visibility="gone"
+        tools:visibility="gone" />
 </LinearLayout>

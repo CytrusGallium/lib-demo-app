@@ -35,6 +35,10 @@ import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.libdemoapp.R
 import com.budiyev.android.libdemoapp.base.BaseActivity
 import com.google.zxing.Result
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
 
 class CodeScannerActivity: BaseActivity() {
 
@@ -46,22 +50,65 @@ class CodeScannerActivity: BaseActivity() {
             this,
             findViewById(R.id.scanner)
         )
+
         codeScanner.decodeCallback = DecodeCallback { result: Result ->
             runOnUiThread {
                 hintView.text = getString(
                     R.string.code_scan_last,
                     result.text
                 )
-                val dialog = ScanResultDialog(
-                    this,
-                    result
-                )
-                dialog.setOnDismissListener {
-                    codeScanner.startPreview()
-                }
-                dialog.show()
+
+                // Send the scan result to an API
+                Thread {
+                    try {
+                        val url = URL("https://solid-shining-scorpion.ngrok-free.app/api/handle-scan")
+                        val connection = url.openConnection() as HttpURLConnection
+                        connection.requestMethod = "POST"
+                        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+                        connection.doOutput = true
+
+                        // Prepare the URL-encoded body with only the scanResult
+                        val params = "scanResult=" + URLEncoder.encode(result.text, "UTF-8")
+                        connection.outputStream.use { os ->
+                            val input = params.toByteArray(charset("utf-8"))
+                            os.write(input, 0, input.size)
+                        }
+
+                        val responseCode = connection.responseCode
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            // Handle successful response
+                            runOnUiThread {
+                                Toast.makeText(this, "Scan result sent successfully", Toast.LENGTH_SHORT).show()
+                                // Clear the hintView text
+                                hintView.text = ""
+                            }
+                        } else {
+                            // Handle error response
+                            runOnUiThread {
+                                Toast.makeText(this, "Failed to send scan result", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        runOnUiThread {
+                            Toast.makeText(this, "Error sending scan result", Toast.LENGTH_SHORT).show()
+                        }
+                    } finally {
+                        // Introduce a delay before restarting the scanner
+                        try {
+                            Thread.sleep(2000)
+                        } catch (e: InterruptedException) {
+                            e.printStackTrace()
+                        }
+                        // Restart the scanner
+                        runOnUiThread {
+                            codeScanner.startPreview()
+                        }
+                    }
+                }.start()
             }
         }
+
         codeScanner.errorCallback = ErrorCallback { error: Throwable ->
             runOnUiThread {
                 Toast.makeText(

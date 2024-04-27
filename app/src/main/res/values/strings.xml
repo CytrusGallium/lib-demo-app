@@ -3,7 +3,7 @@
     <string name="activity_gallery">Gallery</string>
     <string name="activity_preview">Picture</string>
     <string name="image_loader">Image Loader</string>
-    <string name="code_scanner">Code Scanner</string>
+    <string name="code_scanner">Scanner CodeBar &amp; Code QR</string>
     <string name="circular_progress_bar">Circular Progress Bar</string>
     <string name="scan_result">Scan result</string>
     <string name="scanner_error">Scanner error: %s</string>
